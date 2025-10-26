@@ -1,14 +1,9 @@
-// /api/create-checkout.js  (Vercel serverless function)
-import Stripe from "stripe";
-
-// uses your secret key from Vercel env vars (you'll add that in Part B)
+// /api/create-checkout.js  (Vercel serverless function – CommonJS version)
+const Stripe = require("stripe");
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
-/**
- * REPLACE THESE WITH YOUR REAL PRICE IDs FROM STRIPE
- * Service is per card. Shipping/Slab/Grading are one price per exact quantity (1–9).
- */
-const PRICE_ID_SERVICE = "price_1SMWXBATCRer0biJy7mb9BpG"; // e.g. price_1SMWXB...
+// --- YOUR PRICE IDS ---
+const PRICE_ID_SERVICE = "price_1SMWXBATCRer0biJy7mb9BpG";
 
 const SHIPPING_PRICE_ID_BY_QTY = {
   1:"price_1SMWaoATCRer0biJMUD40Jpk", 2:"price_1SMZaKATCRer0biJ4wODpPRz", 3:"price_1SMZafATCRer0biJq4dI3jeg",
@@ -28,27 +23,28 @@ const GRADE_PRICE_ID_BY_QTY = {
   7:"price_1SMZuOATCRer0biJPE6p8MuC", 8:"price_1SMZuWATCRer0biJsxwtQ2DE", 9:"price_1SMZudATCRer0biJJG7fdksL"
 };
 
-export default async function handler(req, res) {
+// --- SERVERLESS HANDLER ---
+module.exports = async (req, res) => {
   try {
-    if (req.method !== "POST") return res.status(405).json({ error: "method_not_allowed" });
+    if (req.method !== "POST") {
+      return res.status(405).json({ error: "method_not_allowed" });
+    }
 
-    // what your front-end will send:
     const { cards, slabQty, gradeOn, email } = req.body || {};
     const qty = Array.isArray(cards) ? cards.length : 0;
 
-    // guard rails
     if (!Array.isArray(cards)) return res.status(400).json({ error: "missing_cards" });
     if (qty < 1 || qty > 9)     return res.status(400).json({ error: "qty_out_of_range" });
 
-    const sQty = Math.max(0, Math.min(Number(slabQty || 0), qty)); // slab can't exceed total cards
+    const sQty = Math.max(0, Math.min(Number(slabQty || 0), qty));
 
     const servicePrice = PRICE_ID_SERVICE;
-    const shipPrice    = SHIPPING_PRICE_ID_BY_QTY[qty];
+    const shipPrice = SHIPPING_PRICE_ID_BY_QTY[qty];
     if (!servicePrice || !shipPrice) return res.status(400).json({ error: "missing_price_map" });
 
     const line_items = [
-      { price: servicePrice, quantity: qty }, // per-card service
-      { price: shipPrice,    quantity: 1   }  // shipping total for that qty
+      { price: servicePrice, quantity: qty },
+      { price: shipPrice, quantity: 1 }
     ];
 
     if (sQty > 0) {
@@ -63,7 +59,6 @@ export default async function handler(req, res) {
       line_items.push({ price: gradePrice, quantity: 1 });
     }
 
-    // keep metadata short (Stripe value limit ~500 chars)
     const order_payload = JSON.stringify({
       qty,
       slabQty: sQty,
@@ -77,14 +72,13 @@ export default async function handler(req, res) {
       ...(email ? { customer_email: email } : {}),
       customer_creation: "if_required",
       success_url: "https://YOURDOMAIN.com/thanks?sid={CHECKOUT_SESSION_ID}",
-      cancel_url:  "https://YOURDOMAIN.com/cancelled",
+      cancel_url: "https://YOURDOMAIN.com/cancelled",
       metadata: { order_payload }
     });
 
     return res.status(200).json({ url: session.url });
   } catch (e) {
     console.error("[create-checkout] error", e);
-    return res.status(400).json({ error: "checkout_error", message: e.message });
+    return res.status(500).json({ error: "server_error", message: e.message });
   }
-}
-
+};
