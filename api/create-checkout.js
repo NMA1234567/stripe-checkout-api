@@ -8,24 +8,24 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
  * REPLACE THESE WITH YOUR REAL PRICE IDs FROM STRIPE
  * Service is per card. Shipping/Slab/Grading are one price per exact quantity (1–9).
  */
-const PRICE_ID_SERVICE = "price_SERVICE_per_card"; // e.g. price_1SMWXB...
+const PRICE_ID_SERVICE = "price_1SMWXBATCRer0biJy7mb9BpG"; // e.g. price_1SMWXB...
 
 const SHIPPING_PRICE_ID_BY_QTY = {
-  1:"price_ship_q1_1195", 2:"price_ship_q2_1495", 3:"price_ship_q3_1995",
-  4:"price_ship_q4_2495", 5:"price_ship_q5_2995", 6:"price_ship_q6_3495",
-  7:"price_ship_q7_3995", 8:"price_ship_q8_4495", 9:"price_ship_q9_4995"
+  1:"price_1SMWaoATCRer0biJMUD40Jpk", 2:"price_1SMZaKATCRer0biJ4wODpPRz", 3:"price_1SMZafATCRer0biJq4dI3jeg",
+  4:"price_1SMZb7ATCRer0biJMmoH7AkF", 5:"price_1SMZbQATCRer0biJ5yx4lTjE", 6:"price_1SMZbiATCRer0biJR2AWhlv2",
+  7:"price_1SMZc0ATCRer0biJo5RYcyn3", 8:"price_1SMZcVATCRer0biJH4sYP7h6", 9:"price_1SMZcrATCRer0biJiISyIU0M"
 };
 
 const SLAB_PRICE_ID_BY_QTY = {
-  1:"price_slab_q1_995",  2:"price_slab_q2_1495", 3:"price_slab_q3_1995",
-  4:"price_slab_q4_2495", 5:"price_slab_q5_2995", 6:"price_slab_q6_3245",
-  7:"price_slab_q7_3495", 8:"price_slab_q8_3745", 9:"price_slab_q9_3995"
+  1:"price_1SMZdoATCRer0biJVM3uN39K",  2:"price_1SMZeFATCRer0biJG64jmpsp", 3:"price_1SMZeTATCRer0biJxTTOTi3i",
+  4:"price_1SMZeTATCRer0biJxTTOTi3i", 5:"price_1SMZr1ATCRer0biJ9Yh1GhOK", 6:"price_1SMZr8ATCRer0biJEtt6cfk0",
+  7:"price_1SMZrGATCRer0biJaqcMKVoI", 8:"price_1SMZrOATCRer0biJpzC8I9XN", 9:"price_1SMZrWATCRer0biJQwdjOvfe"
 };
 
 const GRADE_PRICE_ID_BY_QTY = {
-  1:"price_grade_q1_595",  2:"price_grade_q2_1190", 3:"price_grade_q3_1785",
-  4:"price_grade_q4_2035", 5:"price_grade_q5_2285", 6:"price_grade_q6_2535",
-  7:"price_grade_q7_2785", 8:"price_grade_q8_3035", 9:"price_grade_q9_3285"
+  1:"price_1SMZtJATCRer0biJcZD8GOcx",  2:"price_1SMZtXATCRer0biJWDNfN0K1", 3:"price_1SMZtfATCRer0biJWgU1AIuH",
+  4:"price_1SMZtvATCRer0biJPnHyssCD", 5:"price_1SMZu3ATCRer0biJZ8OFRBkl", 6:"price_1SMZuAATCRer0biJAGOfERJZ",
+  7:"price_1SMZuOATCRer0biJPE6p8MuC", 8:"price_1SMZuWATCRer0biJsxwtQ2DE", 9:"price_1SMZudATCRer0biJJG7fdksL"
 };
 
 export default async function handler(req, res) {
